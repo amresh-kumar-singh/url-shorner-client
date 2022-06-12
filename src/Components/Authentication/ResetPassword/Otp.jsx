@@ -2,8 +2,7 @@ import { Button, Paper, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import Instance from "../../../axios/axiosInstance";
 
-const Otp = ({ setDisplay, message, email }) => {
-  const [otp, setOtp] = useState();
+const Otp = ({ setDisplay, message, email, setOtp, otp }) => {
   const [err, setErr] = useState();
 
   const handleSendOtp = async () => {
@@ -22,7 +21,7 @@ const Otp = ({ setDisplay, message, email }) => {
       console.log(res.data);
     } catch (error) {
       setErr(error?.response?.data?.message);
-      console.log(error.response);
+      console.log("error from otp", error.response);
     }
   };
 
@@ -45,8 +44,10 @@ const Otp = ({ setDisplay, message, email }) => {
         helperText={err && err}
         required
         error={!!err}
+        autoComplete="one-time-code"
         fullWidth
         autoFocus
+        inputMode="numeric"
         inputProps={{ maxLength: 4, max: 9999, min: 1000 }}
         onChange={(e) => {
           setOtp(e.target.value);

@@ -1,11 +1,42 @@
 import { Paper, Stack, TextField, Typography, Button } from "@mui/material";
 import { useState } from "react";
+import useAxios from "../../../hooks/useAxios";
+import { checkPassword } from "../../../utils/checkCredential";
 
-const GeneratePassword = ({ otp }) => {
+const GeneratePassword = ({ otp, email }) => {
   const [err, setErr] = useState();
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
-  const handleGeneratePassword = () => {};
+  const [response, loading, ServerError, Fetch] = useAxios();
+
+  const handleGeneratePassword = async () => {
+    if (!checkPassword(password)) {
+      // console.log("was pass");
+      setErr(
+        "Minimum 8 character, atleat one uppercase, lowercase and special character"
+      );
+      return;
+    }
+    if (password !== confirmPassword) {
+      setErr("Password Did't Match");
+      return;
+    }
+    try {
+      await Fetch({
+        url: "/generatePassword",
+        method: "POST",
+        requestConfig: {
+          email: email,
+          password: password,
+          otp: otp,
+        },
+      });
+    } catch (error) {
+      setErr(ServerError);
+      console.log(error.response);
+    }
+  };
+
   return (
     <Stack
       spacing={3}
@@ -14,6 +45,7 @@ const GeneratePassword = ({ otp }) => {
       component={Paper}
       justifyContent="center"
       padding="10px 20px"
+      sx={{ opacity: loading ? "0.5" : "1" }}
     >
       <Typography variant="h5" color="secondary">
         Generate Password
@@ -50,7 +82,7 @@ const GeneratePassword = ({ otp }) => {
         color="secondary"
         variant="contained"
         onClick={handleGeneratePassword}
-        disabled={!!err}
+        disabled={!!err || !password || !confirmPassword}
       >
         Generate Password
       </Button>

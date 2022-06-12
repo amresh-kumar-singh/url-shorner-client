@@ -4,16 +4,10 @@ import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
-import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import useAxios from "../../hooks/useAxios";
-// import Box from '@mui/material/Box'
-
-const emailRegEx = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/;
-// Minimum eight , at least one uppercase letter, one lowercase letter, one number and one special characte
-const passwordRegEx =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+import { checkEmail, checkPassword } from "../../utils/checkCredential";
 
 const Login = ({ setValue, setToggle }) => {
   const [email, setEmail] = useState("");
@@ -42,14 +36,14 @@ const Login = ({ setValue, setToggle }) => {
     }
   }, [ServerError?.response?.data]);
   const handleEmailCheck = (e) => {
-    if (!emailRegEx.test(email)) {
+    if (!checkEmail(email)) {
       console.log(email);
       email && setErrEmail("Please Enter Valid Email Id");
     }
   };
 
   const handlePasswordCheck = () => {
-    if (!passwordRegEx.test(password)) {
+    if (!checkPassword(password)) {
       password && setErrPassword("Please Enter valid Password");
     }
   };

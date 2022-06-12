@@ -11,11 +11,12 @@ import { InputAdornment } from "@mui/material";
 
 import Adornment from "./Adornment";
 import useAxios from "../../hooks/useAxios";
+import { checkEmail, checkPassword } from "../../utils/checkCredential";
 
-const emailRegEx = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/;
-// Minimum eight max 20 , at least one uppercase letter, one lowercase letter, one number and one special characte
-const passwordRegEx =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+// const emailRegEx = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/;
+// // Minimum eight max 20 , at least one uppercase letter, one lowercase letter, one number and one special characte
+// const passwordRegEx =
+//   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
 const SignUp = ({ setValue, setToggle }) => {
   const [email, setEmail] = useState("");
@@ -28,14 +29,14 @@ const SignUp = ({ setValue, setToggle }) => {
   const [response, loading, ServerError, Fetch] = useAxios();
 
   const handleEmailCheck = (e) => {
-    if (!emailRegEx.test(email)) {
+    if (!checkEmail(email)) {
       console.log(email);
       email && setErrEmail("Please Enter Valid Email Id");
     }
   };
 
   const handlePasswordCheck = () => {
-    if (!passwordRegEx.test(password)) {
+    if (!checkPassword(password)) {
       password &&
         setErrPassword(
           "Minimum 8 character, atleat one uppercase, lowercase and special character"
@@ -59,8 +60,6 @@ const SignUp = ({ setValue, setToggle }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // setStorage([]);
-    // Send Request
     await Fetch({
       url: "/register",
       method: "POST",

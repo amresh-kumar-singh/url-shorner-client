@@ -1,6 +1,7 @@
 import { Button, Paper, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import Instance from "../../../axios/axiosInstance";
+import { checkEmail } from "../../../utils/checkCredential";
 
 const ForgotPassword = ({
   setToggle,
@@ -11,7 +12,11 @@ const ForgotPassword = ({
 }) => {
   const [err, setErr] = useState();
 
-  const handleForgotPassword = async () => {
+  const handleForgotPassword = async (e) => {
+    if (!checkEmail(email)) {
+      setErr("Please Enter Valid Email Id");
+      return;
+    }
     try {
       const res = await Instance.post("/forgotPassword", { email: email });
       setMessage(res.data.message);

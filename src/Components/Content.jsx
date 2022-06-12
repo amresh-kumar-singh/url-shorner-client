@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
@@ -7,8 +7,10 @@ import URLField from "./URLField";
 import { UserState } from "../context";
 import URLTable from "./URLTable";
 import AuthTabs from "./Authentication/AuthTabs";
-import ForgotPassword from "./Authentication/ResetPassword/ForgotPassword";
-import ResetPassword from "./Authentication/ResetPassword";
+// import ForgotPassword from "./Authentication/ResetPassword/ForgotPassword";
+// import ResetPassword from "./Authentication/ResetPassword";
+// import { lazy } from "react";
+const ResetPassword = lazy(() => import("./Authentication/ResetPassword"));
 
 const MyPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
@@ -49,7 +51,9 @@ const Content = () => {
               {toggle ? (
                 <AuthTabs setToggle={setToggle} />
               ) : (
-                <ResetPassword setToggle={setToggle} />
+                <Suspense fallback={<div>Loading...</div>}>
+                  <ResetPassword setToggle={setToggle} />
+                </Suspense>
               )}
             </MyPaper>
           </Grid>
