@@ -8,36 +8,42 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import useAxios from "../../hooks/useAxios";
 import { checkEmail, checkPassword } from "../../utils/checkCredential";
+import Message from "../Message";
+import { UserState } from "../../context";
 
 const Login = ({ setValue, setToggle }) => {
+  const { storage } = UserState();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [errEmail, setErrEmail] = useState("");
   const [errPassword, setErrPassword] = useState("");
-  const [response, loading, ServerError, Fetch] = useAxios();
+  const [loading, ServerError, Fetch] = useAxios();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Send Request
     await Fetch({
       url: "/login",
       method: "POST",
       requestConfig: {
         email: email,
         password: password,
+        urls: storage.map((item) => item.short),
       },
     });
   };
+
   useEffect(() => {
-    if (ServerError?.response?.data) {
-      setErrEmail(ServerError?.response?.data);
-      setErrPassword(ServerError?.response?.data);
+    if (ServerError) {
+      setErrEmail(ServerError);
+      setErrPassword(ServerError);
     }
-  }, [ServerError?.response?.data]);
+  }, [ServerError]);
+  const resetError = () => {
+    setErrEmail("");
+    setErrPassword("");
+  };
   const handleEmailCheck = (e) => {
     if (!checkEmail(email)) {
-      console.log(email);
       email && setErrEmail("Please Enter Valid Email Id");
     }
   };
@@ -58,6 +64,7 @@ const Login = ({ setValue, setToggle }) => {
         cursor: loading && "wait",
       }}
     >
+      {/* <Message error={ServerError?.response?.data} /> */}
       <Typography variant="h4" component="h1" sx={{ color: "black" }}>
         🔐
       </Typography>
@@ -77,7 +84,7 @@ const Login = ({ setValue, setToggle }) => {
           placeholder="Enter Email"
           onChange={(e) => {
             setEmail(e.target.value);
-            setErrEmail("");
+            resetError();
           }}
           onBlur={handleEmailCheck}
           helperText={errEmail}
@@ -93,9 +100,12 @@ const Login = ({ setValue, setToggle }) => {
           error={!!errPassword}
           onChange={(e) => {
             setPassword(e.target.value);
-            setErrPassword("");
+            resetError();
           }}
-          helperText={errPassword}
+          helperText={
+            errPassword ||
+            "Atleast one lowercase, number, uppercase, among @$!%*?&"
+          }
           onBlur={handlePasswordCheck}
         />
 

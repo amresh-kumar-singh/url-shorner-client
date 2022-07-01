@@ -1,9 +1,18 @@
 import { Button, Paper, Stack, TextField, Typography } from "@mui/material";
+import { useEffect } from "react";
 import { useState } from "react";
 import Instance from "../../../axios/axiosInstance";
+import { PasswordState } from "../../../context/passwordContext";
+import Message from "../../Message";
 
-const Otp = ({ setDisplay, message, email, setOtp, otp }) => {
+const Otp = () => {
+  const { passwordState, dispatch } = PasswordState();
+
   const [err, setErr] = useState();
+  const [msg, setMsg] = useState();
+  const [otp, setOtp] = useState();
+
+  const [controller, setController] = useState();
 
   const handleSendOtp = async () => {
     if (otp < 1000 || otp > 9999) {
@@ -12,10 +21,14 @@ const Otp = ({ setDisplay, message, email, setOtp, otp }) => {
       return;
     }
     try {
-      const res = await Instance.post("/otp", { otp: otp, email: email });
+      const res = await Instance.post("/otp", {
+        otp: otp,
+        email: passwordState.email,
+      });
       // setOtpMessage(res.data.message);
       if (res.status === 204) {
-        setDisplay(3);
+        // setDisplay(3);
+        dispatch({ type: "OTP_SUCCESS", payload: otp });
         return;
       }
       console.log(res.data);
@@ -24,6 +37,28 @@ const Otp = ({ setDisplay, message, email, setOtp, otp }) => {
       console.log("error from otp", error.response);
     }
   };
+
+  const handleResend = async () => {
+    const cntrl = new AbortController();
+    setController(cntrl);
+    try {
+      const res = await Instance.post("/forgotPassword", {
+        email: passwordState.email,
+        signal: cntrl.signal,
+      });
+      setMsg(res.data.message && `A new OTP is send to ${passwordState.email}`);
+    } catch (error) {
+      setErr(error?.response?.data);
+      console.log(error.response.data);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      // setErr("");
+      return controller && controller.abort();
+    };
+  }, [controller]);
 
   return (
     <Stack
@@ -34,10 +69,14 @@ const Otp = ({ setDisplay, message, email, setOtp, otp }) => {
       justifyContent="center"
       padding="10px 20px"
     >
+      <Message error={err} message={msg || passwordState.message} />
+
       <Typography variant="h5" color="secondary">
         Please Enter 4 Digit OTP
       </Typography>
-      <Typography variant="body2">{message}</Typography>
+      <Typography variant="body2">
+        {err || msg || passwordState.message}
+      </Typography>
       <TextField
         type="number"
         label="Enter Otp"
@@ -47,8 +86,7 @@ const Otp = ({ setDisplay, message, email, setOtp, otp }) => {
         autoComplete="one-time-code"
         fullWidth
         autoFocus
-        inputMode="numeric"
-        inputProps={{ maxLength: 4, max: 9999, min: 1000 }}
+        inputProps={{ inputMode: "numeric", pattern: "[0-9]{4,}" }}
         onChange={(e) => {
           setOtp(e.target.value);
           setErr("");
@@ -64,7 +102,12 @@ const Otp = ({ setDisplay, message, email, setOtp, otp }) => {
       >
         Validate
       </Button>
-      <Typography variant="subtitle2">Didn't got OTP? resend</Typography>
+      <Typography variant="subtitle2">
+        Didn't got OTP?{" "}
+        <Button size="small" onClick={handleResend}>
+          resend
+        </Button>
+      </Typography>
     </Stack>
   );
 };

@@ -1,21 +1,43 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useReducer } from "react";
 import useLocalStorage from "../hooks/useLocalStorage";
 
 const User = createContext();
-
+const initailState = {
+  error: "",
+  user: {},
+  message: "",
+};
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "USER":
+      return {
+        ...state,
+        user: action.payload,
+      };
+    case "SERVER_ERROR":
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case "Message":
+      return {
+        ...state,
+        message: action.payload,
+      };
+  }
+};
 const UserContext = ({ children }) => {
-  const [user, setUser] = useState({});
-  const [remember, setRemember] = useState(false);
+  const [userState, userDispatcher] = useReducer(reducer, initailState);
   const [storage, setStorage] = useLocalStorage("url✂️", []);
-  // const refresh = useRefresh();
-  // Incase of Remember me
-  useEffect(() => {
-    console.log("Remember me");
-  }, []);
 
   return (
     <User.Provider
-      value={{ user, setUser, remember, setRemember, storage, setStorage }}
+      value={{
+        userState,
+        userDispatcher,
+        storage,
+        setStorage,
+      }}
     >
       {children}
     </User.Provider>

@@ -6,12 +6,13 @@ import is_url from "../../utils/is_url";
 import useInterceptor from "../../hooks/useInterceptor";
 import { UserState } from "../../context";
 import "./URLField.css";
+import Instance from "../../axios/axiosInstance";
 
 const URLField = () => {
   const [url, setUrl] = useState("");
   const [error, setError] = useState(false);
   const axiosPrivate = useInterceptor();
-  const { setStorage } = UserState();
+  const { setStorage, userDispatcher } = UserState();
 
   const handleChange = (e) => {
     e.preventDefault();
@@ -20,6 +21,7 @@ const URLField = () => {
   };
 
   const handleShortUrl = async (e) => {
+    e.preventDefault();
     console.log("Entered URL");
     if (!url) {
       setError("Enter Url");
@@ -29,11 +31,18 @@ const URLField = () => {
       setError("Enter valid Url");
       return;
     }
-
-    const res = await axiosPrivate.post("/", { fullURL: url });
-
-    setStorage((purl) => [...purl, res.data]);
-    setUrl("");
+    try {
+      setError("");
+      const res = await axiosPrivate.post("/", { fullURL: url });
+      setStorage((purl) => [...purl, res.data]);
+      setUrl("");
+    } catch (err) {
+      console.log("Err:", err);
+      let serverError = err?.response?.data?.message || err.message;
+      setError(serverError);
+      userDispatcher({ type: "SERVER_ERROR", payload: serverError });
+      console.log("err: ", serverError);
+    }
   };
 
   return (

@@ -7,9 +7,9 @@ import URLField from "./URLField";
 import { UserState } from "../context";
 import URLTable from "./URLTable";
 import AuthTabs from "./Authentication/AuthTabs";
-// import ForgotPassword from "./Authentication/ResetPassword/ForgotPassword";
-// import ResetPassword from "./Authentication/ResetPassword";
-// import { lazy } from "react";
+import Message from "./Message";
+import PasswordProvider from "../context/passwordContext";
+
 const ResetPassword = lazy(() => import("./Authentication/ResetPassword"));
 
 const MyPaper = styled(Paper)(({ theme }) => ({
@@ -23,17 +23,24 @@ const MyPaper = styled(Paper)(({ theme }) => ({
 }));
 
 const Content = () => {
-  const { user } = UserState();
+  const { userState } = UserState();
   const [toggle, setToggle] = useState(true);
 
   return (
-    <Box sx={{ padding: "10px 40px", alignContent: "center" }}>
+    <Box
+      sx={{
+        padding: "10px 40px",
+        alignContent: "center",
+        width: { sm: "98%", md: "80%" },
+      }}
+    >
+      <Message />
       <Grid
         container
         spacing={4}
-        sx={{ width: { sm: "100vw", md: "95vw", lg: "90vw", xl: "85vw" } }}
+        // sx={{ width: { xs: "95vw", md: "95vw", lg: "90vw", xl: "85vw" } }}
       >
-        <Grid item height="90vh" sm={!user?.email ? 7 : 12} xs={12}>
+        <Grid item height="90vh" md={!userState?.user?.email ? 7 : 12} xs={12}>
           <MyPaper
             sx={{
               flexDirection: "column",
@@ -45,14 +52,16 @@ const Content = () => {
             <URLTable />
           </MyPaper>
         </Grid>
-        {!user?.email && (
-          <Grid item sm={5} xs={12}>
+        {!userState?.user?.email && (
+          <Grid item md={5} sx={{ display: { xs: "none", md: "block" } }}>
             <MyPaper>
               {toggle ? (
                 <AuthTabs setToggle={setToggle} />
               ) : (
                 <Suspense fallback={<div>Loading...</div>}>
-                  <ResetPassword setToggle={setToggle} />
+                  <PasswordProvider>
+                    <ResetPassword setToggle={setToggle} />
+                  </PasswordProvider>
                 </Suspense>
               )}
             </MyPaper>

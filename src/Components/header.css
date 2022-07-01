@@ -1,11 +1,15 @@
 .logo {
-  font-size: 2em;
+  /* font-size: 2em; */
   color: orange;
+  margin-bottom: 5px;
 }
 .wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.wrapper div {
+  margin-top: 8px;
 }
 p {
   text-transform: uppercase;
@@ -42,5 +46,12 @@ p span {
   }
   100% {
     background-position: 100% 50%;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .wrapper div {
+    font-size: 8px;
+    margin-top: 4px;
   }
 }

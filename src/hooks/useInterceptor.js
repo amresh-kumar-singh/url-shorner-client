@@ -4,14 +4,16 @@ import { useEffect } from "react";
 import useRefresh from "./useRefresh";
 
 const useInterceptor = () => {
-  const { user } = UserState();
+  const { userState } = UserState();
   const refresh = useRefresh();
 
   useEffect(() => {
     const requestIntercept = PrivateInstance.interceptors.request.use(
       (config) => {
-        if (!config.headers["Authorization"] && user.accessToken) {
-          config.headers["Authorization"] = `Bearer ${user.accessToken}`;
+        if (!config.headers["Authorization"] && userState.user.accessToken) {
+          config.headers[
+            "Authorization"
+          ] = `Bearer ${userState.user.accessToken}`;
         }
         return config;
       },
@@ -38,7 +40,7 @@ const useInterceptor = () => {
       PrivateInstance.interceptors.request.eject(requestIntercept);
       PrivateInstance.interceptors.response.eject(responseIntercept);
     };
-  }, [user]);
+  }, [userState]);
 
   return PrivateInstance;
 };

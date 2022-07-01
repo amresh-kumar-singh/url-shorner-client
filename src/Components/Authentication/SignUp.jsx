@@ -6,19 +6,16 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { InputAdornment } from "@mui/material";
-// import Box from '@mui/material/Box'
+import InputAdornment from "@mui/material/InputAdornment";
 
 import Adornment from "./Adornment";
 import useAxios from "../../hooks/useAxios";
 import { checkEmail, checkPassword } from "../../utils/checkCredential";
-
-// const emailRegEx = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/;
-// // Minimum eight max 20 , at least one uppercase letter, one lowercase letter, one number and one special characte
-// const passwordRegEx =
-//   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+import { UserState } from "../../context";
+import { useEffect } from "react";
 
 const SignUp = ({ setValue, setToggle }) => {
+  const { storage } = UserState();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -26,11 +23,23 @@ const SignUp = ({ setValue, setToggle }) => {
   const [errEmail, setErrEmail] = useState("");
   const [errPassword, setErrPassword] = useState("");
   const [errConfirmPassword, setErrConfirmPassword] = useState("");
-  const [response, loading, ServerError, Fetch] = useAxios();
+  const [loading, ServerError, Fetch] = useAxios();
+
+  useEffect(() => {
+    if (ServerError) {
+      setErrEmail(ServerError);
+      setErrPassword(ServerError);
+    }
+  }, [ServerError]);
+
+  const resetError = () => {
+    setErrPassword("");
+    setErrPassword("");
+    setErrConfirmPassword("");
+  };
 
   const handleEmailCheck = (e) => {
     if (!checkEmail(email)) {
-      console.log(email);
       email && setErrEmail("Please Enter Valid Email Id");
     }
   };
@@ -43,16 +52,12 @@ const SignUp = ({ setValue, setToggle }) => {
         );
     }
   };
-
   const handleConfirmPassword = (e) => {
     setErrConfirmPassword("");
-    setConfirmPassword(e.target.value);
     if (!errPassword && password === e.target.value) {
-      console.log("match");
       setConfirmPassword(() => e.target.value);
       return;
     }
-
     setErrConfirmPassword(
       e.target.value && (errPassword || "Password Did't Match")
     );
@@ -66,6 +71,7 @@ const SignUp = ({ setValue, setToggle }) => {
       requestConfig: {
         email: email,
         password: password,
+        urls: storage.map((item) => item.short),
       },
     });
   };
@@ -110,11 +116,11 @@ const SignUp = ({ setValue, setToggle }) => {
           type="password"
           variant="standard"
           placeholder="Enter Password"
-          sx={{ mt: 3 }}
+          sx={{ mt: 2 }}
           error={!!errPassword}
           onChange={(e) => {
             setPassword(e.target.value);
-            setErrPassword("");
+            resetError();
           }}
           helperText={
             errPassword ||
@@ -137,7 +143,7 @@ const SignUp = ({ setValue, setToggle }) => {
           type="password"
           variant="standard"
           placeholder="Confirm Password"
-          sx={{ mt: 3 }}
+          sx={{ mt: 2 }}
           onChange={handleConfirmPassword}
           helperText={errConfirmPassword}
         />
@@ -161,7 +167,7 @@ const SignUp = ({ setValue, setToggle }) => {
             !confirmPassword ||
             loading
           } //this prop take only Boolean
-          sx={{ mt: 3, mb: 2 }}
+          sx={{ mt: 2, mb: 2 }}
         >
           {!loading ? "SignUp" : "Loading..."}
         </Button>

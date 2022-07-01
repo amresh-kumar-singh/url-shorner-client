@@ -1,16 +1,14 @@
 import { Button, Paper, Stack, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import Instance from "../../../axios/axiosInstance";
+import { PasswordState } from "../../../context/passwordContext";
 import { checkEmail } from "../../../utils/checkCredential";
+import Message from "../../Message";
 
-const ForgotPassword = ({
-  setToggle,
-  setMessage,
-  setDisplay,
-  email,
-  setEmail,
-}) => {
+const ForgotPassword = ({ setToggle }) => {
+  const { passwordState, dispatch } = PasswordState();
   const [err, setErr] = useState();
+  const [email, setEmail] = useState();
 
   const handleForgotPassword = async (e) => {
     if (!checkEmail(email)) {
@@ -19,12 +17,14 @@ const ForgotPassword = ({
     }
     try {
       const res = await Instance.post("/forgotPassword", { email: email });
-      setMessage(res.data.message);
-      setDisplay(2);
+      dispatch({
+        type: "FORGOT_PASSWORD_SUCCESS",
+        payload: { message: res.data.message, email: email },
+      });
       console.log(res.data);
     } catch (error) {
-      setErr(error?.response?.data?.message);
-      console.log(error.response);
+      setErr(error?.response?.data?.message || error?.response?.data);
+      console.log(error.response.data);
     }
   };
 
@@ -41,6 +41,7 @@ const ForgotPassword = ({
       justifyContent="center"
       padding="10px 20px"
     >
+      <Message error={err} />
       <Typography variant="h5" color="secondary">
         Forgot Password
       </Typography>

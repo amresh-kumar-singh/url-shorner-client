@@ -1,16 +1,14 @@
-import {
-  Button,
-  Link,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableFooter,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Tooltip,
-} from "@mui/material";
+import TableRow from "@mui/material/TableRow";
+import Tooltip from "@mui/material/Tooltip";
+import TablePagination from "@mui/material/TablePagination";
+import TableHead from "@mui/material/TableHead";
+import TableFooter from "@mui/material/TableFooter";
+import TableContainer from "@mui/material/TableContainer";
+import TableCell from "@mui/material/TableCell";
+import TableBody from "@mui/material/TableBody";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+import Table from "@mui/material/Table";
 import "./urlList.css";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { useState } from "react";
@@ -33,7 +31,7 @@ const URLTable = () => {
 
   return (
     <>
-      <TableContainer className="table-wrapper">
+      <TableContainer className="table-wrapper" sx={{ width: { xs: "100%" } }}>
         <Table className="fl-table">
           <TableHead>
             <TableRow>
@@ -115,26 +113,28 @@ const URLTable = () => {
               </TableRow>
             ))}
           </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TablePagination
-                rowsPerPageOptions={[]}
-                colSpan={3}
-                count={storage.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                SelectProps={{
-                  inputProps: {
-                    "aria-label": "rows per page",
-                  },
-                  native: true,
-                }}
-                onPageChange={handleChangePage}
-                // onRowsPerPageChange={handleChangeRowsPerPage}
-                // ActionsComponent={TablePaginationActions}
-              />
-            </TableRow>
-          </TableFooter>
+          {storage.length > 10 && (
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[10]}
+                  colSpan={3}
+                  count={storage.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  SelectProps={{
+                    inputProps: {
+                      "aria-label": "rows per page",
+                    },
+                    native: true,
+                  }}
+                  onPageChange={handleChangePage}
+                  // onRowsPerPageChange={handleChangeRowsPerPage}
+                  // ActionsComponent={TablePaginationActions}
+                />
+              </TableRow>
+            </TableFooter>
+          )}
         </Table>
       </TableContainer>
     </>

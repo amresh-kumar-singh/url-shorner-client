@@ -3,9 +3,7 @@ import Instance from "../axios/axiosInstance";
 import { UserState } from "../context";
 
 const useAxios = () => {
-  const { setUser, setStorage } = UserState();
-
-  const [response, setResponse] = useState(null);
+  const { setStorage, userDispatcher } = UserState();
   const [ServerError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
   const [controller, setController] = useState();
@@ -22,25 +20,30 @@ const useAxios = () => {
         ...requestConfig,
         signal: ctrl.signal,
       });
-
-      setUser(res.data);
-      // setStorage((prev) => [...new Set([...prev, ...res.data.data.urls])]);
+      userDispatcher({ type: "USER", payload: res.data });
+      userDispatcher({ type: "Message", payload: res.data.message });
       setStorage(res.data.data.urls);
-    } catch (err) {
-      setResponse("");
-      setServerError(err);
-      console.log(ServerError);
+    } catch (error) {
+      let serverError =
+        error?.response?.data?.message ||
+        error?.response?.data ||
+        error.message;
+      setServerError(serverError);
+      userDispatcher({ type: "SERVER_ERROR", payload: serverError });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    // console.log("useAxios");
-    return () => controller && controller.abort();
+    return () => {
+      setServerError("");
+      userDispatcher({ type: "SERVER_ERROR", payload: "" });
+      controller && controller.abort();
+    };
   }, [controller]);
 
-  return [response, loading, ServerError, Fetch];
+  return [loading, ServerError, Fetch];
 };
 
 export default useAxios;

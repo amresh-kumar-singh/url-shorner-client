@@ -6,14 +6,20 @@ import { PrivateInstance } from "../../axios/axiosInstance";
 import { UserState } from "../../context";
 
 const DeleteURL = ({ short }) => {
-  const { setStorage } = UserState();
+  const { setStorage, userDispatcher } = UserState();
   const [deleted, setDeleted] = useState("");
   const handleDelete = async () => {
     console.log("delete", short);
-    const response = await PrivateInstance.delete(`/${short}`);
-    if (response.status === 204) {
-      setStorage((prev) => prev.filter((urlObj) => urlObj.short !== short));
-      setDeleted("Deleted");
+    try {
+      const res = await PrivateInstance.delete(`/${short}`);
+      if (res.status === 204) {
+        setStorage((prev) => prev.filter((urlObj) => urlObj.short !== short));
+        setDeleted("Deleted");
+      }
+    } catch (error) {
+      let serverError = error?.response?.data?.message || error.message;
+      userDispatcher({ type: "SERVER_ERROR", payload: serverError });
+      console.log("err: ", serverError);
     }
   };
   return (

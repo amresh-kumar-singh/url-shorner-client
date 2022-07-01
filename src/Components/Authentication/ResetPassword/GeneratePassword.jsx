@@ -1,9 +1,12 @@
 import { Paper, Stack, TextField, Typography, Button } from "@mui/material";
 import { useState } from "react";
+import { PasswordState } from "../../../context/passwordContext";
 import useAxios from "../../../hooks/useAxios";
 import { checkPassword } from "../../../utils/checkCredential";
+import Message from "../../Message";
 
-const GeneratePassword = ({ otp, email }) => {
+const GeneratePassword = () => {
+  const { passwordState } = PasswordState();
   const [err, setErr] = useState();
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
@@ -11,7 +14,6 @@ const GeneratePassword = ({ otp, email }) => {
 
   const handleGeneratePassword = async () => {
     if (!checkPassword(password)) {
-      // console.log("was pass");
       setErr(
         "Minimum 8 character, atleat one uppercase, lowercase and special character"
       );
@@ -26,12 +28,13 @@ const GeneratePassword = ({ otp, email }) => {
         url: "/generatePassword",
         method: "POST",
         requestConfig: {
-          email: email,
+          email: passwordState.email,
           password: password,
-          otp: otp,
+          otp: passwordState.otp,
         },
       });
     } catch (error) {
+      //TODO some stuff are missing
       setErr(ServerError);
       console.log(error.response);
     }
@@ -47,6 +50,8 @@ const GeneratePassword = ({ otp, email }) => {
       padding="10px 20px"
       sx={{ opacity: loading ? "0.5" : "1" }}
     >
+      <Message error={ServerError?.response?.data} />
+
       <Typography variant="h5" color="secondary">
         Generate Password
       </Typography>
