@@ -16,12 +16,11 @@ import { UserState } from "../../context";
 import DeleteURL from "./DeleteURL";
 
 const rowsPerPage = 10;
-
+console.log(process.env.REACT_APP_URL);
 const URLTable = () => {
   const { storage } = UserState();
   const [copy, setCopy] = useState("");
   const [page, setPage] = useState(0);
-  // const [rowsPerPage, setRowPerPage] = useState(10);
 
   const handleChangePage = (e, newPage) => {
     setPage(newPage);
@@ -31,9 +30,9 @@ const URLTable = () => {
 
   return (
     <>
-      <TableContainer className="table-wrapper" sx={{ width: { xs: "100%" } }}>
+      <TableContainer className="table-wrapper">
         <Table className="fl-table">
-          <TableHead>
+          <TableHead sx={{ position: "sticky", zIndex: 2, top: 0 }}>
             <TableRow>
               <TableCell>#</TableCell>
               <TableCell>URL</TableCell>
@@ -61,11 +60,11 @@ const URLTable = () => {
                     overflow: "hidden",
                   }}
                 >
-                  <Link href={`http://${item.full}`}>{item.full}</Link>
+                  <Link href={`${item.full}`}>{item.full}</Link>
                 </TableCell>
                 <TableCell width="30%" sx={{ textAlign: "right" }}>
                   <span style={{ verticalAlign: "inherit" }}>
-                    localhost:4000/{item.short}
+                    {process.env.REACT_APP_URL}/{item.short}
                   </span>
 
                   <Tooltip
@@ -86,7 +85,7 @@ const URLTable = () => {
                       disableElevation
                       onClick={(e) => {
                         navigator.clipboard.writeText(
-                          `localhost:4000/${item.short}`
+                          `${process.env.REACT_APP_URL}/${item.short}`
                         );
                         setCopy("Copied ✓");
                         setTimeout(() => setCopy(""), 500);
@@ -95,7 +94,7 @@ const URLTable = () => {
                       <ContentCopyIcon
                         sx={{
                           fontSize: "14px",
-                          marginLeft: "10px",
+                          marginLeft: { xs: "4px", sm: "10px" },
                           cursor: "pointer",
                           "&:hover": { color: "blue" },
                         }}
@@ -114,11 +113,18 @@ const URLTable = () => {
             ))}
           </TableBody>
           {storage.length > 10 && (
-            <TableFooter>
+            <TableFooter
+              sx={{
+                position: "sticky",
+                zIndex: 2,
+                bottom: 0,
+                backgroundColor: "white",
+              }}
+            >
               <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[10]}
-                  colSpan={3}
+                  colSpan={5}
                   count={storage.length}
                   rowsPerPage={rowsPerPage}
                   page={page}
@@ -129,8 +135,6 @@ const URLTable = () => {
                     native: true,
                   }}
                   onPageChange={handleChangePage}
-                  // onRowsPerPageChange={handleChangeRowsPerPage}
-                  // ActionsComponent={TablePaginationActions}
                 />
               </TableRow>
             </TableFooter>

@@ -1,6 +1,7 @@
 body {
   display: flex;
-  min-height: 100vh; /* background: #637d63; */
+  min-height: 100vh;
+  /* background: #637d63; */
   background: #f8eee7;
 }
 

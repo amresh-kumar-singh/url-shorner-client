@@ -24,7 +24,7 @@ function TabPanel(props) {
 
 TabPanel.propTypes = {
   children: PropTypes.node,
-  //   index: PropTypes.number.isRequired,
+  index: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
 };
 
@@ -56,15 +56,15 @@ const AuthTabs = ({ setToggle }) => {
           aria-label="auth tabs"
           variant="fullWidth"
         >
-          <Tab label="Sign Up" {...a11yProps(0)} />
-          <Tab label="Login" {...a11yProps(1)} />
+          <Tab label="Login" {...a11yProps(0)} />
+          <Tab label="Sign Up" {...a11yProps(1)} />
         </Tabs>
       </Box>
-      <TabPanel value={value} index={0}>
-        <SignUp setValue={setValue} setToggle={setToggle} />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
+      <TabPanel value={value} index={0} className="panel">
         <Login setValue={setValue} setToggle={setToggle} />
+      </TabPanel>
+      <TabPanel value={value} index={1} className="panel">
+        <SignUp setValue={setValue} setToggle={setToggle} />
       </TabPanel>
     </Box>
   );

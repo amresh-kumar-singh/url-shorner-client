@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useReducer } from "react";
+import React, { createContext, useContext, useEffect, useReducer } from "react";
 import useLocalStorage from "../hooks/useLocalStorage";
+import useSessionStorage from "../hooks/useSessionStorage";
 
 const User = createContext();
 const initailState = {
@@ -24,12 +25,21 @@ const reducer = (state, action) => {
         ...state,
         message: action.payload,
       };
+    default:
+      return { ...state };
   }
 };
 const UserContext = ({ children }) => {
   const [userState, userDispatcher] = useReducer(reducer, initailState);
   const [storage, setStorage] = useLocalStorage("url✂️", []);
+  const [session, setSession] = useSessionStorage("url✂️", {});
 
+  useEffect(() => {
+    if (session?.email) {
+      userDispatcher({ type: "USER", payload: session });
+    }
+    // eslint-disable-next-line
+  }, []);
   return (
     <User.Provider
       value={{
@@ -37,6 +47,8 @@ const UserContext = ({ children }) => {
         userDispatcher,
         storage,
         setStorage,
+        session,
+        setSession,
       }}
     >
       {children}

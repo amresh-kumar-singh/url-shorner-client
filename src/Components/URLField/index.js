@@ -6,23 +6,22 @@ import is_url from "../../utils/is_url";
 import useInterceptor from "../../hooks/useInterceptor";
 import { UserState } from "../../context";
 import "./URLField.css";
-import Instance from "../../axios/axiosInstance";
+import Message from "../Message";
+// import Instance from "../../axios/axiosInstance";
 
 const URLField = () => {
   const [url, setUrl] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
   const axiosPrivate = useInterceptor();
-  const { setStorage, userDispatcher } = UserState();
+  const { setStorage, userDispatcher, setSession } = UserState();
 
   const handleChange = (e) => {
     e.preventDefault();
     setError("");
     setUrl(e.target.value);
   };
-
   const handleShortUrl = async (e) => {
     e.preventDefault();
-    console.log("Entered URL");
     if (!url) {
       setError("Enter Url");
       return;
@@ -33,15 +32,18 @@ const URLField = () => {
     }
     try {
       setError("");
+      userDispatcher({ type: "SERVER_ERROR", payload: "" });
       const res = await axiosPrivate.post("/", { fullURL: url });
       setStorage((purl) => [...purl, res.data]);
       setUrl("");
     } catch (err) {
-      console.log("Err:", err);
-      let serverError = err?.response?.data?.message || err.message;
+      let serverError = err?.response?.data || err.message;
       setError(serverError);
+      if (err.response.status === 440) {
+        userDispatcher({ type: "USER", payload: {} });
+        setSession({});
+      }
       userDispatcher({ type: "SERVER_ERROR", payload: serverError });
-      console.log("err: ", serverError);
     }
   };
 
@@ -55,9 +57,10 @@ const URLField = () => {
         gap: "5px",
         backgroundColor: "white",
         padding: "10px 20px",
+        borderRadius: "6px",
       }}
-      // component={Paper}
     >
+      {error.includes("Session Expired") && <Message error={error} />}
       <TextField
         value={url}
         variant="outlined"
@@ -67,9 +70,10 @@ const URLField = () => {
         margin="dense"
         onChange={handleChange}
         error={!!error}
-        autoComplete="none"
-      ></TextField>
+        autoComplete="off"
+      />
       <Button
+        className="effect-btn"
         type="submit"
         variant="contained"
         fullWidth

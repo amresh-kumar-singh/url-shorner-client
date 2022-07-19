@@ -55,3 +55,9 @@ p span {
     margin-top: 4px;
   }
 }
+@media (max-width: 380px) {
+  .toolbar-root {
+    padding-left: 2px !important;
+    padding-right: 0px !important;
+  }
+}

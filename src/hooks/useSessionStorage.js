@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 function getPreviousValue(key, initialValue) {
   //JSON parse Error if value to key is deleted manually so use try catch
   try {
-    const savedValue = JSON.parse(localStorage.getItem(key));
+    const savedValue = JSON.parse(sessionStorage.getItem(key));
     if (typeof savedValue !== typeof initialValue) return initialValue;
     if (savedValue) return savedValue;
   } catch (error) {
@@ -13,11 +13,11 @@ function getPreviousValue(key, initialValue) {
   return initialValue;
 }
 
-export default function useLocalStorage(key, initialValue) {
+export default function useSessionStorage(key, initialValue) {
   const [value, setValue] = useState(() => getPreviousValue(key, initialValue));
 
   useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(value));
+    sessionStorage.setItem(key, JSON.stringify(value));
     // eslint-disable-next-line
   }, [value]);
 

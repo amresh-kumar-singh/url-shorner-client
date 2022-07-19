@@ -1,26 +1,28 @@
 import { useEffect, useState } from "react";
 import { UserState } from "../../context";
 import useRefresh from "../../hooks/useRefresh";
-
+//TODO line:15
 const PersistUser = ({ children }) => {
-  const { user } = UserState();
+  const { session, userState, storage } = UserState();
+  // eslint-disable-next-line
   const [loading, setLoading] = useState(false);
   const refresh = useRefresh();
-  // const [validUrl, setValidUrl] = useState(true)
   useEffect(() => {
     const verifyRefreshToken = async () => {
-      console.log("verifyRefreshToken");
       try {
         setLoading(true);
         await refresh();
       } catch (error) {
-        console.log(error);
+        console.error(error.message);
       } finally {
         setLoading(false);
       }
     };
     // this is being called twice in <React StrictMode>
-    !user?.accessToken ? verifyRefreshToken() : setLoading(false);
+    !userState?.user?.accessToken && !session.accessToken && storage.length > 0
+      ? verifyRefreshToken()
+      : setLoading(false);
+    // eslint-disable-next-line
   }, []);
 
   return <>{children}</>;

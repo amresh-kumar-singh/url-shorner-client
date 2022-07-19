@@ -1,6 +1,9 @@
-import { Button, Paper, Stack, TextField, Typography } from "@mui/material";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import Instance from "../../../axios/axiosInstance";
 import { PasswordState } from "../../../context/passwordContext";
 import Message from "../../Message";
@@ -16,7 +19,6 @@ const Otp = () => {
 
   const handleSendOtp = async () => {
     if (otp < 1000 || otp > 9999) {
-      console.log(typeof otp);
       setErr("Not valid OTP");
       return;
     }
@@ -25,16 +27,14 @@ const Otp = () => {
         otp: otp,
         email: passwordState.email,
       });
-      // setOtpMessage(res.data.message);
       if (res.status === 204) {
         // setDisplay(3);
         dispatch({ type: "OTP_SUCCESS", payload: otp });
         return;
       }
-      console.log(res.data);
     } catch (error) {
-      setErr(error?.response?.data?.message);
-      console.log("error from otp", error.response);
+      setErr(error?.response?.data || error.message);
+      console.error("error from otp", error.response);
     }
   };
 
@@ -48,8 +48,8 @@ const Otp = () => {
       });
       setMsg(res.data.message && `A new OTP is send to ${passwordState.email}`);
     } catch (error) {
-      setErr(error?.response?.data);
-      console.log(error.response.data);
+      setErr(error?.response?.data || error.message);
+      console.error(error.response.data);
     }
   };
 
@@ -83,7 +83,7 @@ const Otp = () => {
         helperText={err && err}
         required
         error={!!err}
-        autoComplete="one-time-code"
+        autoComplete="off"
         fullWidth
         autoFocus
         inputProps={{ inputMode: "numeric", pattern: "[0-9]{4,}" }}

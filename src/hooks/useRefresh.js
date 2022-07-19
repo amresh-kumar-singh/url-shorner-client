@@ -11,7 +11,7 @@ const useRefresh = () => {
       setStorage(res.data.data.urls);
       return res.data.accessToken;
     } catch (error) {
-      console.log("error refresh");
+      void error;
     }
   };
 

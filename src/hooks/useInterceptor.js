@@ -26,7 +26,6 @@ const useInterceptor = () => {
         const prevRequest = err?.config;
         if (err?.response?.status === 403 && !prevRequest?.sent) {
           prevRequest.sent = true;
-          console.log("interceptor");
           const newAccessToken = await refresh();
           prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
           return PrivateInstance(prevRequest);
@@ -40,6 +39,7 @@ const useInterceptor = () => {
       PrivateInstance.interceptors.request.eject(requestIntercept);
       PrivateInstance.interceptors.response.eject(responseIntercept);
     };
+    // eslint-disable-next-line
   }, [userState]);
 
   return PrivateInstance;

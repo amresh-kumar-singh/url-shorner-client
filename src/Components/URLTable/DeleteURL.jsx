@@ -8,8 +8,8 @@ import { UserState } from "../../context";
 const DeleteURL = ({ short }) => {
   const { setStorage, userDispatcher } = UserState();
   const [deleted, setDeleted] = useState("");
+
   const handleDelete = async () => {
-    console.log("delete", short);
     try {
       const res = await PrivateInstance.delete(`/${short}`);
       if (res.status === 204) {
@@ -19,7 +19,7 @@ const DeleteURL = ({ short }) => {
     } catch (error) {
       let serverError = error?.response?.data?.message || error.message;
       userDispatcher({ type: "SERVER_ERROR", payload: serverError });
-      console.log("err: ", serverError);
+      console.error("err: ", serverError);
     }
   };
   return (

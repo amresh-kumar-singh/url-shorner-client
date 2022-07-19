@@ -10,7 +10,7 @@ const GeneratePassword = () => {
   const [err, setErr] = useState();
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
-  const [response, loading, ServerError, Fetch] = useAxios();
+  const [loading, ServerError, Fetch] = useAxios();
 
   const handleGeneratePassword = async () => {
     if (!checkPassword(password)) {
@@ -36,7 +36,7 @@ const GeneratePassword = () => {
     } catch (error) {
       //TODO some stuff are missing
       setErr(ServerError);
-      console.log(error.response);
+      console.error(error.response);
     }
   };
 
@@ -63,6 +63,7 @@ const GeneratePassword = () => {
         error={!!err}
         fullWidth
         autoFocus
+        autoComplete="off"
         onChange={(e) => {
           setPassword(e.target.value);
           setErr("");
@@ -76,6 +77,7 @@ const GeneratePassword = () => {
         required
         error={!!err}
         fullWidth
+        autoComplete="off"
         onChange={(e) => {
           setConfirmPassword(e.target.value);
           setErr("");

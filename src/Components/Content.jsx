@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from "react";
+import React from "react";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
@@ -6,11 +6,8 @@ import { styled } from "@mui/material/styles";
 import URLField from "./URLField";
 import { UserState } from "../context";
 import URLTable from "./URLTable";
-import AuthTabs from "./Authentication/AuthTabs";
 import Message from "./Message";
-import PasswordProvider from "../context/passwordContext";
-
-const ResetPassword = lazy(() => import("./Authentication/ResetPassword"));
+import Form from "./Form";
 
 const MyPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
@@ -24,27 +21,22 @@ const MyPaper = styled(Paper)(({ theme }) => ({
 
 const Content = () => {
   const { userState } = UserState();
-  const [toggle, setToggle] = useState(true);
 
   return (
     <Box
       sx={{
-        padding: "10px 40px",
         alignContent: "center",
-        width: { sm: "98%", md: "80%" },
+        width: { xs: "98%", md: "92%", lg: "80%" },
+        padding: { xs: "10px 0px", md: "10px 20px", lg: "10px 40px" },
       }}
     >
       <Message />
-      <Grid
-        container
-        spacing={4}
-        // sx={{ width: { xs: "95vw", md: "95vw", lg: "90vw", xl: "85vw" } }}
-      >
+      <Grid container spacing={4}>
         <Grid item height="90vh" md={!userState?.user?.email ? 7 : 12} xs={12}>
           <MyPaper
             sx={{
               flexDirection: "column",
-              padding: "8px 20px",
+              padding: { xs: "8px", sm: "8px 20px" },
               justifyContent: "space-around",
             }}
           >
@@ -52,21 +44,7 @@ const Content = () => {
             <URLTable />
           </MyPaper>
         </Grid>
-        {!userState?.user?.email && (
-          <Grid item md={5} sx={{ display: { xs: "none", md: "block" } }}>
-            <MyPaper>
-              {toggle ? (
-                <AuthTabs setToggle={setToggle} />
-              ) : (
-                <Suspense fallback={<div>Loading...</div>}>
-                  <PasswordProvider>
-                    <ResetPassword setToggle={setToggle} />
-                  </PasswordProvider>
-                </Suspense>
-              )}
-            </MyPaper>
-          </Grid>
-        )}
+        {!userState?.user?.email && <Form show="none" />}
       </Grid>
     </Box>
   );

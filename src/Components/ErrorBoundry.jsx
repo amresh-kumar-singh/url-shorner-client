@@ -13,8 +13,7 @@ class ErrorBoundry extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.log(error);
-    console.log(errorInfo);
+    console.error(errorInfo);
   }
 
   render() {

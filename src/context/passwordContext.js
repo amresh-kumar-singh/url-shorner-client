@@ -23,6 +23,8 @@ const reducer = (state, action) => {
         otp: action.payload,
         display: 3,
       };
+    default:
+      return { ...state };
   }
 };
 export default function PasswordProvider({ children }) {

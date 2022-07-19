@@ -3,7 +3,7 @@ import Instance from "../axios/axiosInstance";
 import { UserState } from "../context";
 
 const useAxios = () => {
-  const { setStorage, userDispatcher } = UserState();
+  const { setStorage, userDispatcher, setSession } = UserState();
   const [ServerError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
   const [controller, setController] = useState();
@@ -22,6 +22,12 @@ const useAxios = () => {
       });
       userDispatcher({ type: "USER", payload: res.data });
       userDispatcher({ type: "Message", payload: res.data.message });
+      if (!res.data.rememberMe) {
+        setSession({
+          accessToken: res.data.accessToken,
+          email: res.data.email,
+        });
+      }
       setStorage(res.data.data.urls);
     } catch (error) {
       let serverError =
@@ -41,6 +47,7 @@ const useAxios = () => {
       userDispatcher({ type: "SERVER_ERROR", payload: "" });
       controller && controller.abort();
     };
+    // eslint-disable-next-line
   }, [controller]);
 
   return [loading, ServerError, Fetch];

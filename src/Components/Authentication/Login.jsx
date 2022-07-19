@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import useAxios from "../../hooks/useAxios";
 import { checkEmail, checkPassword } from "../../utils/checkCredential";
-import Message from "../Message";
 import { UserState } from "../../context";
+import { Checkbox, FormControlLabel } from "@mui/material";
 
 const Login = ({ setValue, setToggle }) => {
   const { storage } = UserState();
@@ -17,6 +15,7 @@ const Login = ({ setValue, setToggle }) => {
   const [password, setPassword] = useState("");
   const [errEmail, setErrEmail] = useState("");
   const [errPassword, setErrPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, ServerError, Fetch] = useAxios();
 
   const handleSubmit = async (e) => {
@@ -27,6 +26,7 @@ const Login = ({ setValue, setToggle }) => {
       requestConfig: {
         email: email,
         password: password,
+        rememberMe: rememberMe,
         urls: storage.map((item) => item.short),
       },
     });
@@ -47,15 +47,17 @@ const Login = ({ setValue, setToggle }) => {
       email && setErrEmail("Please Enter Valid Email Id");
     }
   };
-
   const handlePasswordCheck = () => {
     if (!checkPassword(password)) {
       password && setErrPassword("Please Enter valid Password");
     }
   };
-
+  const handleChange = (e) => {
+    setRememberMe(e.target.checked);
+  };
   return (
     <Box
+      className="auth"
       sx={{
         display: "flex",
         alignItem: "center",
@@ -64,16 +66,16 @@ const Login = ({ setValue, setToggle }) => {
         cursor: loading && "wait",
       }}
     >
-      {/* <Message error={ServerError?.response?.data} /> */}
       <Typography variant="h4" component="h1" sx={{ color: "black" }}>
         🔐
       </Typography>
-      <Typography component="h1" varient="h5">
+      <Typography component="h5" varient="h5">
         Login
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
         <TextField
+          className="text-field"
           required
           label="Enter Email"
           type="email"
@@ -88,15 +90,17 @@ const Login = ({ setValue, setToggle }) => {
           }}
           onBlur={handleEmailCheck}
           helperText={errEmail}
+          autoComplete="off"
         />
         <TextField
+          className="text-field"
           required
           fullWidth
           label="Enter Password"
           type="password"
           variant="standard"
           placeholder="Enter Password"
-          sx={{ mt: 3 }}
+          sx={{ mt: { xs: 1, sm: 3 } }}
           error={!!errPassword}
           onChange={(e) => {
             setPassword(e.target.value);
@@ -107,15 +111,19 @@ const Login = ({ setValue, setToggle }) => {
             "Atleast one lowercase, number, uppercase, among @$!%*?&"
           }
           onBlur={handlePasswordCheck}
+          autoComplete="off"
         />
-
-        <div style={{ display: "flex" }}>
-          <FormControlLabel
-            control={<Checkbox value="remember" />}
-            label="Remember Me"
-          />
-        </div>
-
+        <FormControlLabel
+          control={
+            <Checkbox
+              value="remember"
+              color="secondary"
+              onChange={handleChange}
+            />
+          }
+          label="Remember me"
+          sx={{ display: "flex" }}
+        />
         <Button
           color="secondary"
           type="submit"

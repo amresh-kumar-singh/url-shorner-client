@@ -6,7 +6,7 @@ import { checkEmail } from "../../../utils/checkCredential";
 import Message from "../../Message";
 
 const ForgotPassword = ({ setToggle }) => {
-  const { passwordState, dispatch } = PasswordState();
+  const { dispatch } = PasswordState();
   const [err, setErr] = useState();
   const [email, setEmail] = useState();
 
@@ -21,10 +21,9 @@ const ForgotPassword = ({ setToggle }) => {
         type: "FORGOT_PASSWORD_SUCCESS",
         payload: { message: res.data.message, email: email },
       });
-      console.log(res.data);
     } catch (error) {
-      setErr(error?.response?.data?.message || error?.response?.data);
-      console.log(error.response.data);
+      setErr(error?.response?.data || error.message);
+      console.error(error.response.data);
     }
   };
 
@@ -53,6 +52,7 @@ const ForgotPassword = ({ setToggle }) => {
         error={!!err}
         fullWidth
         autoFocus
+        autoComplete="off"
         onChange={(e) => {
           setEmail(e.target.value);
           setErr("");
