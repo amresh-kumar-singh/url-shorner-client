@@ -16,7 +16,6 @@ import { UserState } from "../../context";
 import DeleteURL from "./DeleteURL";
 
 const rowsPerPage = 10;
-console.log(process.env.REACT_APP_URL);
 const URLTable = () => {
   const { storage } = UserState();
   const [copy, setCopy] = useState("");
@@ -60,11 +59,11 @@ const URLTable = () => {
                     overflow: "hidden",
                   }}
                 >
-                  <Link href={`${item.full}`}>{item.full}</Link>
+                  <Link href={`${item.full}`}>{item.full.split("//")[1]}</Link>
                 </TableCell>
                 <TableCell width="30%" sx={{ textAlign: "right" }}>
                   <span style={{ verticalAlign: "inherit" }}>
-                    {process.env.REACT_APP_URL}/{item.short}
+                    {process.env.REACT_APP_URL.split("//")[1]}/{item.short}
                   </span>
 
                   <Tooltip
