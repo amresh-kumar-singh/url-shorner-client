@@ -53,7 +53,7 @@ const URLTable = () => {
                 <TableCell width="5%">{page * rowsPerPage + i + 1}</TableCell>
                 <TableCell
                   sx={{
-                    maxWidth: { sm: "40px", md: "80px" },
+                    maxWidth: "120px",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
@@ -134,6 +134,12 @@ const URLTable = () => {
                     native: true,
                   }}
                   onPageChange={handleChangePage}
+                  sx={{
+                    "& .MuiTablePagination-spacer": {
+                      flex: { xs: "inherit", sm: "1 1 100%" },
+                      paddingLeft: { xs: "32px", sm: "inherit" },
+                    },
+                  }}
                 />
               </TableRow>
             </TableFooter>

@@ -180,7 +180,7 @@ const SignUp = ({ setValue, setToggle }) => {
             !confirmPassword ||
             loading
           } //this prop take only Boolean
-          sx={{ mt: 2, mb: 2 }}
+          sx={{ mb: "2px" }}
         >
           {!loading ? "SignUp" : "Loading..."}
         </Button>
@@ -207,7 +207,7 @@ const SignUp = ({ setValue, setToggle }) => {
                 margin: 0,
                 fontSize: "10px",
               }}
-              onClick={() => setValue(1)}
+              onClick={() => setValue(0)}
             >
               Already Have an account? Login
             </Button>

@@ -12,6 +12,7 @@ import Message from "../Message";
 const URLField = () => {
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const axiosPrivate = useInterceptor();
   const { setStorage, userDispatcher, setSession } = UserState();
 
@@ -31,9 +32,10 @@ const URLField = () => {
       return;
     }
     try {
+      setLoading(true);
       setError("");
       userDispatcher({ type: "SERVER_ERROR", payload: "" });
-      const res = await axiosPrivate.post("/", { fullURL: url });
+      const res = await axiosPrivate.post("/generateUrl", { fullURL: url });
       setStorage((purl) => [...purl, res.data]);
       setUrl("");
     } catch (err) {
@@ -44,6 +46,8 @@ const URLField = () => {
         setSession({});
       }
       userDispatcher({ type: "SERVER_ERROR", payload: serverError });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,8 +83,9 @@ const URLField = () => {
         fullWidth
         color="secondary"
         onClick={handleShortUrl}
+        disabled={loading}
       >
-        Shorten Your URL
+        {loading ? "Shortening.." : "Shorten Your URL"}
       </Button>
     </Box>
   );
